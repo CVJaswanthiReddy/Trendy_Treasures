@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Trendy_Treasures</title>
+    <link href="./index.css" rel="stylesheet" />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module">
+      import React from "react";
+      import ReactDOM from "react-dom/client";
+      import App from "./src/App.js"; // Adjust this path if necessary
+
+      const root = ReactDOM.createRoot(document.getElementById("root"));
+      root.render(<App />); // Render without React.StrictMode
+    </script>
+  </body>
+</html>
