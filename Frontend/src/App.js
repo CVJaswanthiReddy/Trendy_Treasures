@@ -1,14 +1,17 @@
 import React from "react";
-import Signup from "./Components/Signup.js";
-import Login from "./Components/Login.js";
+import Header from "./Components/Header";
 
 const App = () => {
   return (
-    <>
-      <div>
-        <Login />
+    <div>
+      <Header />
+      {/* You can add some placeholder content to see if the header is functioning */}
+      <div style={{ padding: "20px" }}>
+        <h1>Check if the Header is Working</h1>
+        <p>If you can see the header links, it is working correctly!</p>
       </div>
-    </>
+    </div>
   );
 };
+
 export default App;
