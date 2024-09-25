@@ -1,25 +1,31 @@
+// src/Components/Header.js
+
 import React from "react";
 import { Link } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 const Title = () => {
   return (
     <Link to="/">
       <img
-        className="w-24"
+        className="w-32 h-10"
         alt="logo"
-        src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTFNOgyDzSfrveQZD_VNBgPhLDwTyHtq0On0g&s"
+        src="https://letopusa.wordpress.com/wp-content/uploads/2011/11/trendytreasuresonline_logo1.jpg"
       />
     </Link>
   );
 };
 
 const Header = () => {
+  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
+
   return (
-    <header className="flex justify-between items-center p-4 shadow-md">
-      {/* Left - Logo */}
-      <div className="flex items-center space-x-4">
+    <header className="grid grid-cols-1 md:grid-cols-3 items-center p-4 bg-white shadow-md">
+      <div className="flex justify-center md:justify-start items-center mb-4 md:mb-0">
         <Title />
-        <div className="flex items-center w-96 bg-gray-100 p-2 rounded-md">
+      </div>
+      <div className="flex justify-center mb-4 md:mb-0">
+        <div className="flex items-center w-full md:w-96 bg-gray-100 p-2 rounded-md">
           <input
             data-testid="search-input"
             type="text"
@@ -31,40 +37,17 @@ const Header = () => {
           </button>
         </div>
       </div>
-
-      {/* Right - Menu */}
-      <nav className="flex items-center space-x-6">
-        <div className="relative group">
-          <button className="flex items-center text-gray-800">
-            <i className="fa fa-user text-2xl mr-2"></i> Login
-          </button>
-          {/* Dropdown menu */}
-          <ul className="absolute right-0 hidden group-hover:block bg-white shadow-md rounded-md mt-2 w-48">
-            <li className="px-4 py-2 hover:bg-gray-100">
-              <Link to="/profile">My Profile</Link>
-            </li>
-            <li className="px-4 py-2 hover:bg-gray-100">
-              <Link to="/plus">Flipkart Plus Zone</Link>
-            </li>
-            <li className="px-4 py-2 hover:bg-gray-100">
-              <Link to="/orders">Orders</Link>
-            </li>
-            <li className="px-4 py-2 hover:bg-gray-100">
-              <Link to="/wishlist">Wishlist</Link>
-            </li>
-            <li className="px-4 py-2 hover:bg-gray-100">
-              <Link to="/rewards">Rewards</Link>
-            </li>
-            <li className="px-4 py-2 hover:bg-gray-100">
-              <Link to="/gift-cards">Gift Cards</Link>
-            </li>
-          </ul>
-        </div>
-
+      <nav className="flex justify-center md:justify-end items-center space-x-6">
+        <Link
+          to={isAuthenticated ? "/profile" : "/login"}
+          className="flex items-center text-gray-800"
+        >
+          <i className="fa fa-user text-2xl mr-2"></i>
+          {isAuthenticated ? "My Profile" : "Login"}
+        </Link>
         <Link data-testid="cart" to="/cart" className="text-gray-800">
           <i className="fa-solid fa-cart-shopping text-2xl"></i> Cart
         </Link>
-
         <Link to="/sell" className="text-gray-800">
           Become a Seller
         </Link>

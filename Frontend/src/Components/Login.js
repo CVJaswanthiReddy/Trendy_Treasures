@@ -1,12 +1,40 @@
 import React, { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { loginSuccess, loginFailure } from "../actions/authActions";
+import { useNavigate, Link } from "react-router-dom";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const dispatch = useDispatch();
+  const error = useSelector((state) => state.auth.error);
+  const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log({ email, password });
+
+    try {
+      const response = await fetch("http://localhost:3005/api/v1/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        dispatch(loginSuccess(data.user));
+        navigate("/profile"); // Redirect to profile page
+      } else {
+        dispatch(loginFailure(data.message || "Invalid credentials"));
+        console.log("Invalid credentials"); // Log the failure
+      }
+    } catch (error) {
+      dispatch(loginFailure("An error occurred. Please try again."));
+      console.error("Login error:", error);
+    }
   };
 
   return (
@@ -15,10 +43,11 @@ const Login = () => {
         <h2 className="text-4xl font-bold text-center text-gray-800 mb-6">
           Login
         </h2>
+        {error && <p className="text-red-500 text-center">{error}</p>}
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
             <label className="block text-sm font-medium text-gray-700">
-              email:
+              Email:
             </label>
             <input
               type="email"
@@ -30,7 +59,7 @@ const Login = () => {
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700">
-              password:
+              Password:
             </label>
             <input
               type="password"
@@ -49,9 +78,9 @@ const Login = () => {
         </form>
         <p className="mt-6 text-center text-gray-600">
           Don't have an account?{" "}
-          <a href="#" className="text-blue-600 hover:underline">
+          <Link to="/signup" className="text-blue-600 hover:underline">
             Sign Up here
-          </a>
+          </Link>
         </p>
       </div>
     </div>
