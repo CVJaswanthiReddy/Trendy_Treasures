@@ -1,7 +1,10 @@
 import ProductService from "../services/product-service.js";
 import Product from "../models/product.js";
 import slugify from "slugify";
+
 const productService = new ProductService();
+
+// Create Product
 export const createProduct = async (req, res) => {
   try {
     const productData = req.body; // Get the product data from request body
@@ -21,6 +24,7 @@ export const createProduct = async (req, res) => {
   }
 };
 
+// Get All Products
 export const getAllProducts = async (req, res) => {
   try {
     const products = await productService.getAllProducts();
@@ -38,6 +42,7 @@ export const getAllProducts = async (req, res) => {
   }
 };
 
+// Get Product by Slug
 export const getProductBySlug = async (req, res) => {
   try {
     const { slug } = req.params; // Get the product slug from route params
@@ -62,10 +67,11 @@ export const getProductBySlug = async (req, res) => {
   }
 };
 
+// Update Product
 export const updateProduct = async (req, res) => {
   try {
     const { slug } = req.params;
-    const { name, categoryId, price, description } = req.body;
+    const { name, categoryId, price, description, rating } = req.body;
 
     // Check if the product name is provided
     if (!name) {
@@ -78,7 +84,7 @@ export const updateProduct = async (req, res) => {
     // Find the product by slug and update it
     const updatedProduct = await Product.findOneAndUpdate(
       { slug: slug },
-      { name, slug: productSlug, categoryId, price, description },
+      { name, slug: productSlug, categoryId, price, description, rating },
       { new: true, runValidators: true }
     );
 
@@ -93,9 +99,10 @@ export const updateProduct = async (req, res) => {
   }
 };
 
+// Delete Product
 export const deleteProduct = async (req, res) => {
   try {
-    const { slug } = req.params; // Get the product ID from route params
+    const { slug } = req.params; // Get the product slug from route params
     const deletedProduct = await productService.deleteProduct(slug);
     if (!deletedProduct) {
       return res.status(404).json({

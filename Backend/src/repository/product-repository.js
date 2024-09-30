@@ -9,6 +9,7 @@ class ProductRepository extends CrudRepository {
   async findById(id) {
     return await Product.findById(id);
   }
+
   async findBySlug(slug) {
     return await Product.findOne({ slug });
   }

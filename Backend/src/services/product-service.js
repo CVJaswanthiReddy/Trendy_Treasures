@@ -18,6 +18,7 @@ class ProductService {
       throw error; // Re-throw the error for the controller to handle
     }
   }
+
   async getProductById(id) {
     try {
       const product = await this.productRepository.findById(id);
@@ -26,6 +27,7 @@ class ProductService {
       throw error;
     }
   }
+
   async getProductBySlug(slug) {
     try {
       const product = await this.productRepository.findBySlug(slug);
@@ -44,13 +46,12 @@ class ProductService {
     }
   }
 
-  async updateProduct(slug, name, categoryId) {
+  async updateProduct(slug, productData) {
     try {
-      const newSlug = slugify(name, { lower: true, strict: true });
+      const newSlug = slugify(productData.name, { lower: true, strict: true });
       const updatedProduct = await this.productRepository.updateBySlug(slug, {
-        name,
+        ...productData,
         slug: newSlug,
-        categoryId,
       });
       return updatedProduct;
     } catch (error) {
