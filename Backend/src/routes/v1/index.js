@@ -16,6 +16,13 @@ import {
   deleteSubcategory,
 } from "../../controllers/subcategory-controller.js";
 
+import {
+  createProduct,
+  getProductBySlug,
+  getAllProducts,
+  updateProduct,
+  deleteProduct,
+} from "../../controllers/product-controller.js";
 const router = express.Router();
 
 // Authentication Routes
@@ -35,5 +42,12 @@ router.get("/subcategories/:slug", getSubcategoryBySlug); // Get subcategory by 
 router.get("/subcategories", getAllSubcategories); // Get all subcategories
 router.put("/subcategories/:slug", updateSubcategory); // Update a subcategory
 router.delete("/subcategories/:slug", deleteSubcategory); // Delete a subcategory
+
+// Product Routes
+router.post("/products", createProduct); // Create a new product
+router.get("/products/:slug", getProductBySlug); // Get product by slug
+router.get("/products", getAllProducts); // Get all products
+router.put("/products/:slug", updateProduct); // Update a product
+router.delete("/products/:slug", deleteProduct); // Delete a product
 
 export default router;
