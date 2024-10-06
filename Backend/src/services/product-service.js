@@ -37,9 +37,13 @@ class ProductService {
     }
   }
 
-  async getAllProducts() {
+  // Product Service
+  async getAllProducts(categoryId) {
     try {
-      const products = await this.productRepository.getAll();
+      const products = await this.productRepository.getAll(); // Fetch all products
+      if (categoryId) {
+        return products.filter((product) => product.categoryId === categoryId); // Filter by categoryId
+      }
       return products;
     } catch (error) {
       throw error;

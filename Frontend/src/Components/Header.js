@@ -110,6 +110,48 @@ const Header = () => {
           <div className="text-xl font-bold text-gray-800">
             <Link to="/">Trendy Treasures</Link>
           </div>
+          {/* Center: Navigation */}
+          <nav className="hidden md:flex space-x-6">
+            <Link to="/" className="text-gray-600 hover:text-gray-900">
+              Home
+            </Link>
+            <Link to="/products" className="text-gray-600 hover:text-gray-900">
+              Products
+            </Link>
+            <Link
+              to="/products/men"
+              className="text-gray-600 hover:text-gray-900"
+            >
+              Men
+            </Link>
+            <Link
+              to="/products/women"
+              className="text-gray-600 hover:text-gray-900"
+            >
+              Women
+            </Link>
+            <Link
+              to="/products/kids"
+              className="text-gray-600 hover:text-gray-900"
+            >
+              Kids
+            </Link>
+            <Link
+              to="/products/footwear"
+              className="text-gray-600 hover:text-gray-900"
+            >
+              Footwear
+            </Link>
+            <Link
+              to="/products/accessories"
+              className="text-gray-600 hover:text-gray-900"
+            >
+              Accessories
+            </Link>
+            <Link to="/search" className="text-gray-600 hover:text-gray-900">
+              Search
+            </Link>
+          </nav>
 
           {/* Right: Cart and Profile */}
           <div className="flex space-x-4">

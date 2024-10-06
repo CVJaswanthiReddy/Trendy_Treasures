@@ -6,6 +6,8 @@ import { Provider } from "react-redux";
 import Header from "./Components/Header"; // Import the Header component
 import Login from "./Components/Login";
 import Signup from "./Components/Signup"; // Import the Signup component
+import CategoryList from "./Components/CategoryList"; // Import CategoryListContainer
+import ProductsByCategory from "./Components/ProductsByCategory"; // Import ProductsByCategory component
 import store from "./store"; // Redux store
 
 const App = () => {
@@ -27,7 +29,18 @@ const App = () => {
             {/* Signup Route */}
             <Route path="/signup" element={<Signup />} />
 
-            {/* Add more routes as needed */}
+            {/* Category List Route */}
+            <Route path="/categories" element={<CategoryList />} />
+
+            {/* Products by Category Route */}
+            {/* Products by Category Route */}
+            <Route
+              path="/products" // Add :categoryId to the route
+              element={<ProductsByCategory />} // Using ProductsByCategory component
+            />
+
+            {/* Catch-all route for undefined URLs */}
+            <Route path="*" element={<h1>404 - Page Not Found</h1>} />
           </Routes>
         </div>
       </Router>

@@ -23,6 +23,17 @@ class ProductRepository extends CrudRepository {
   async deleteBySlug(slug) {
     return await Product.findOneAndDelete({ slug });
   }
+  // productRepository.js
+
+  // Get all products
+  async getAll() {
+    return await Product.find(); // Fetch all products from the database
+  }
+
+  // Get products by category
+  async getByCategory(categoryId) {
+    return await Product.find({ category: categoryId }); // Fetch products filtered by category
+  }
 }
 
 export default ProductRepository;
