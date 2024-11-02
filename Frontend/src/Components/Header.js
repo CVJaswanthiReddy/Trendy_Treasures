@@ -2,8 +2,9 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { FaShoppingCart, FaUserCircle } from "react-icons/fa";
 import { BsArrowLeftCircleFill, BsArrowRightCircleFill } from "react-icons/bs";
-import { GiRunningShoe, GiTShirt } from "react-icons/gi"; // Additional icons for categories
-import { SiNike, SiAdidas, SiPuma, SiZara } from "react-icons/si"; // Use icons from Simple Icons
+import { GiRunningShoe, GiTShirt } from "react-icons/gi";
+import { SiNike, SiAdidas, SiPuma, SiZara } from "react-icons/si";
+import CategoryList from "./CategoryList";
 
 // Carousel Data
 const slidesData = [
@@ -64,9 +65,7 @@ const Carousel = ({ data }) => {
             alt={item.alt}
             className="w-full h-full object-cover rounded-md"
           />
-          <div
-            className={`absolute inset-0 bg-black bg-opacity-30 flex flex-col items-center text-center justify-center text-white px-4`}
-          >
+          <div className="absolute inset-0 bg-black bg-opacity-30 flex flex-col items-center text-center justify-center text-white px-4">
             <h1 className="text-4xl font-bold mb-4">{item.heading}</h1>
             <p className="text-lg mb-4">{item.subheading}</p>
             <Link
@@ -172,76 +171,7 @@ const Header = () => {
       <section className="carousel-container">
         <Carousel data={slidesData} />
       </section>
-
-      {/* Shop by Category */}
-      <section className="container mx-auto py-8">
-        <h2 className="text-2xl font-bold mb-4 text-center">
-          Shop by Category
-        </h2>
-        <div className="flex justify-around">
-          <div className="text-center">
-            <GiTShirt className="text-5xl mx-auto mb-2" />
-            <Link to="/products/men" className="text-lg font-semibold">
-              Men
-            </Link>
-          </div>
-          <div className="text-center">
-            <GiTShirt className="text-5xl mx-auto mb-2" />
-            <Link to="/products/women" className="text-lg font-semibold">
-              Women
-            </Link>
-          </div>
-          <div className="text-center">
-            <GiTShirt className="text-5xl mx-auto mb-2" />
-            <Link to="/products/kids" className="text-lg font-semibold">
-              Kids
-            </Link>
-          </div>
-          <div className="text-center">
-            <GiRunningShoe className="text-5xl mx-auto mb-2" />
-            <Link to="/products/footwear" className="text-lg font-semibold">
-              Footwear
-            </Link>
-          </div>
-          <div className="text-center">
-            <GiRunningShoe className="text-5xl mx-auto mb-2" />
-            <Link to="/products/accessories" className="text-lg font-semibold">
-              Accessories
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* Shop by Brand */}
-      <section className="container mx-auto py-8">
-        <h2 className="text-2xl font-bold mb-4 text-center">Shop by Brand</h2>
-        <div className="flex justify-around">
-          <div className="text-center">
-            <SiNike className="text-5xl mx-auto mb-2" />
-            <Link to="/brands/nike" className="text-lg font-semibold">
-              Nike
-            </Link>
-          </div>
-          <div className="text-center">
-            <SiAdidas className="text-5xl mx-auto mb-2" />
-            <Link to="/brands/adidas" className="text-lg font-semibold">
-              Adidas
-            </Link>
-          </div>
-          <div className="text-center">
-            <SiPuma className="text-5xl mx-auto mb-2" />
-            <Link to="/brands/puma" className="text-lg font-semibold">
-              Puma
-            </Link>
-          </div>
-          <div className="text-center">
-            <SiZara className="text-5xl mx-auto mb-2" />
-            <Link to="/brands/zara" className="text-lg font-semibold">
-              Zara
-            </Link>
-          </div>
-        </div>
-      </section>
+      <CategoryList />
     </div>
   );
 };
