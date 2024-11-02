@@ -7,7 +7,11 @@ class ProductRepository extends CrudRepository {
   }
 
   async findById(id) {
-    return await Product.findById(id);
+    try {
+      return await Product.findById(id).exec(); // Returns null if not found
+    } catch (error) {
+      throw new Error("Error fetching product from database");
+    }
   }
 
   async findBySlug(slug) {

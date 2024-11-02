@@ -21,10 +21,10 @@ class ProductService {
 
   async getProductById(id) {
     try {
-      const product = await this.productRepository.findById(id);
-      return product;
+      const product = await productRepository.findById(id);
+      return product; // This will return null if not found
     } catch (error) {
-      throw error;
+      throw error; // Propagate the error
     }
   }
 
@@ -45,6 +45,15 @@ class ProductService {
         return products.filter((product) => product.categoryId === categoryId); // Filter by categoryId
       }
       return products;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getProductById(id) {
+    try {
+      const product = await this.productRepository.findById(id);
+      return product;
     } catch (error) {
       throw error;
     }

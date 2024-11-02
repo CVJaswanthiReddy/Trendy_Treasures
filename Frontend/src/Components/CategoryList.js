@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
-import { GiTShirt } from "react-icons/gi"; // For Men
-import { FaDesktop, FaLaptop, FaMobileAlt } from "react-icons/fa"; // For Electronics, Smartphones
+import { GiTShirt } from "react-icons/gi"; // Example icon for Men
+import { FaLaptop, FaMobileAlt } from "react-icons/fa"; // Icons for Electronics, Smartphones
 
 const CategoryList = () => {
   const [categories, setCategories] = useState([]);
@@ -28,47 +28,42 @@ const CategoryList = () => {
   }, []);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <div className="text-center py-8">Loading...</div>;
   }
 
   if (error) {
-    return <div>{error}</div>;
+    return <div className="text-center text-red-500 py-8">{error}</div>;
   }
 
   const getCategoryIcon = (categoryName) => {
     switch (categoryName.toLowerCase()) {
-      case "electronics and gadgets":
-        return <FaLaptop className="text-5xl mx-auto mb-2" />;
       case "smartphones":
         return <FaMobileAlt className="text-5xl mx-auto mb-2" />;
+      case "electronics":
+        return <FaLaptop className="text-5xl mx-auto mb-2" />;
       case "men":
         return <GiTShirt className="text-5xl mx-auto mb-2" />;
       default:
-        return <GiTShirt className="text-5xl mx-auto mb-2" />; // Default icon
+        return <GiTShirt className="text-5xl mx-auto mb-2" />;
     }
   };
 
   return (
     <div>
-      <h1>Category List</h1>
-      <section className="container mx-auto py-8">
-        <h2 className="text-2xl font-bold mb-4 text-center">
-          Shop by Category
-        </h2>
-        <div className="flex justify-around">
-          {categories.map((category) => (
-            <div key={category._id} className="text-center">
-              {getCategoryIcon(category.name)}
-              <Link
-                to={`/products/${category._id}`}
-                className="text-lg font-semibold"
-              >
-                {category.name}
-              </Link>
-            </div>
-          ))}
-        </div>
-      </section>
+      <h1 className="text-3xl font-bold text-center my-6">Shop by Category</h1>
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-8">
+        {categories.map((category) => (
+          <div key={category._id} className="text-center">
+            {getCategoryIcon(category.name)}
+            <Link
+              to={`/products/${category._id}`}
+              className="text-lg font-semibold hover:text-blue-600"
+            >
+              {category.name}
+            </Link>
+          </div>
+        ))}
+      </div>
     </div>
   );
 };
