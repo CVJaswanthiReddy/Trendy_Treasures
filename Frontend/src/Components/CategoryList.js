@@ -56,7 +56,7 @@ const CategoryList = () => {
           <div key={category._id} className="text-center">
             {getCategoryIcon(category.name)}
             <Link
-              to={`/products/${category._id}`}
+              to={`/products/${category._id}`} // Fixed Link
               className="text-lg font-semibold hover:text-blue-600"
             >
               {category.name}

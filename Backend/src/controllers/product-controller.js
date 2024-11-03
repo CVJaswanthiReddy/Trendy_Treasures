@@ -24,16 +24,6 @@ export const createProduct = async (req, res) => {
   }
 };
 
-// controllers/product-controller.js
-export const getAllProducts = async (req, res) => {
-  try {
-    // Fetch all products without applying any filters
-    const products = await Product.find();
-    res.status(200).json({ products });
-  } catch (error) {
-    res.status(500).json({ message: "Error fetching products", error });
-  }
-};
 // Get Product by Slug
 export const getProductBySlug = async (req, res) => {
   try {
@@ -118,21 +108,26 @@ export const deleteProduct = async (req, res) => {
 };
 
 export const getProductById = async (req, res) => {
-  const { id } = req.query; // Get ID from query parameters
-
+  console.log("Request received for getting product by ID");
   try {
-    if (!id) {
+    const { productId } = req.params; // Get ID from route parameters
+
+    // Check if productId is provided
+    if (!productId) {
       return res.status(400).json({
         success: false,
         message: "Product ID is required",
       });
     }
 
-    const product = await productService.getProductById(id);
-
+    // Fetch the product using the service
+    const product = await productService.getProductById(productId);
+    console.log("hello");
+    // Check if the product was found
     if (!product) {
       return res.status(404).json({
         success: false,
+        data: product,
         message: "Product not found",
       });
     }
@@ -146,6 +141,24 @@ export const getProductById = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: "Failed to fetch product",
+      error: error.message,
+    });
+  }
+};
+
+export const getAllProducts = async (req, res) => {
+  try {
+    const products = await productService.getAllProducts(); // Assuming this fetches all products from your database
+
+    return res.status(200).json({
+      success: true,
+      data: products,
+    });
+  } catch (error) {
+    console.error("Error fetching products:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch products",
       error: error.message,
     });
   }

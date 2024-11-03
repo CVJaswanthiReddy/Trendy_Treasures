@@ -21,10 +21,10 @@ class ProductService {
 
   async getProductById(id) {
     try {
-      const product = await productRepository.findById(id);
+      const product = await this.productRepository.findById(id);
       return product; // This will return null if not found
     } catch (error) {
-      throw error; // Propagate the error
+      throw new Error("Error fetching product: " + error.message); // Propagate the error
     }
   }
 

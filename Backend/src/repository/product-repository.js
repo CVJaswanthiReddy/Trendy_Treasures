@@ -7,10 +7,12 @@ class ProductRepository extends CrudRepository {
   }
 
   async findById(id) {
+    console.log("Fetching product with ID:", id); // Log the ID being fetched
+    console.log("Fetching product with ID:", id);
     try {
-      return await Product.findById(id).exec(); // Returns null if not found
+      return await Product.findById(id); // This is generally preferable to findOne for ID lookups
     } catch (error) {
-      throw new Error("Error fetching product from database");
+      throw new Error("Error fetching product from database: " + error.message); // Handle errors
     }
   }
 
@@ -31,7 +33,7 @@ class ProductRepository extends CrudRepository {
 
   // Get all products
   async getAll() {
-    return await Product.find(); // Fetch all products from the database
+    return await Product.find({}); // Fetch all products from the database
   }
 
   // Get products by category

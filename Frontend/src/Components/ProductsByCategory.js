@@ -1,4 +1,3 @@
-// ProductsByCategory.js
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
@@ -17,7 +16,7 @@ const ProductsByCategory = () => {
           "http://localhost:3005/api/v1/products"
         );
         const categoryProducts = response.data.data.filter(
-          (product) => product.categoryId === categoryId
+          (product) => product.categoryId === categoryId // Ensure this matches your product structure
         );
         setProducts(categoryProducts);
       } catch (err) {
@@ -27,7 +26,12 @@ const ProductsByCategory = () => {
       }
     };
 
-    fetchProducts();
+    if (categoryId) {
+      fetchProducts();
+    } else {
+      setError("Category ID is required.");
+      setLoading(false);
+    }
   }, [categoryId]);
 
   if (loading) return <p>Loading products...</p>;
@@ -35,8 +39,7 @@ const ProductsByCategory = () => {
 
   return (
     <div>
-      <ProductList products={products} />{" "}
-      {/* Pass the products to ProductList */}
+      <ProductList products={products} />
     </div>
   );
 };

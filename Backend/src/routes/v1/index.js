@@ -47,7 +47,7 @@ router.delete("/subcategories/:slug", deleteSubcategory); // Delete a subcategor
 // Product Routes
 router.post("/products", createProduct); // Create a new product
 router.get("/products/:slug", getProductBySlug); // Get product by slug
-router.get("/products", getProductById); // Get product by ID
+router.get("/products/:productId", getProductById); // Get product by ID
 router.get("/products", getAllProducts); // Get all products
 router.put("/products/:slug", updateProduct); // Update a product
 router.delete("/products/:slug", deleteProduct); // Delete a product
