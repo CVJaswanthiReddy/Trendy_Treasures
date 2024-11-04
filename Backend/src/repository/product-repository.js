@@ -6,9 +6,7 @@ class ProductRepository extends CrudRepository {
     super(Product);
   }
 
-  async findById(id) {
-    console.log("Fetching product with ID:", id); // Log the ID being fetched
-    console.log("Fetching product with ID:", id);
+  async hey(id) {
     try {
       return await Product.findById(id); // This is generally preferable to findOne for ID lookups
     } catch (error) {
@@ -27,6 +25,7 @@ class ProductRepository extends CrudRepository {
   }
 
   async deleteBySlug(slug) {
+    console.log("in database");
     return await Product.findOneAndDelete({ slug });
   }
   // productRepository.js

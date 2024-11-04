@@ -27,8 +27,11 @@ export const createProduct = async (req, res) => {
 // Get Product by Slug
 export const getProductBySlug = async (req, res) => {
   try {
-    const { slug } = req.params; // Get the product slug from route params
+    console.log("slug");
+    const { slug } = req.query; // Get the product slug from route params
+    console.log("slug in controller");
     const product = await productService.getProductBySlug(slug);
+    console.log("pro", product);
     if (!product) {
       return res.status(404).json({
         success: false,
@@ -84,8 +87,10 @@ export const updateProduct = async (req, res) => {
 // Delete Product
 export const deleteProduct = async (req, res) => {
   try {
+    console.log("slug delete controller");
     const { slug } = req.params; // Get the product slug from route params
     const deletedProduct = await productService.deleteProduct(slug);
+    console.log("pro", deletedProduct);
     if (!deletedProduct) {
       return res.status(404).json({
         success: false,
@@ -108,10 +113,10 @@ export const deleteProduct = async (req, res) => {
 };
 
 export const getProductById = async (req, res) => {
-  console.log("Request received for getting product by ID");
   try {
+    console.log("Controller");
     const { productId } = req.params; // Get ID from route parameters
-
+    console.log(`Request received for getting product by ID:${productId}`);
     // Check if productId is provided
     if (!productId) {
       return res.status(400).json({
@@ -124,13 +129,13 @@ export const getProductById = async (req, res) => {
     const product = await productService.getProductById(productId);
     console.log("hello");
     // Check if the product was found
-    if (!product) {
-      return res.status(404).json({
-        success: false,
-        data: product,
-        message: "Product not found",
-      });
-    }
+    // if (!product) {
+    //   return res.status(404).json({
+    //     success: false,
+    //     data: product,
+    //     message: "Product not found",
+    //   });
+    // }
 
     return res.status(200).json({
       success: true,

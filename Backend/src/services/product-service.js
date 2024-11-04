@@ -21,7 +21,7 @@ class ProductService {
 
   async getProductById(id) {
     try {
-      const product = await this.productRepository.findById(id);
+      const product = await this.productRepository.hey(id);
       return product; // This will return null if not found
     } catch (error) {
       throw new Error("Error fetching product: " + error.message); // Propagate the error
@@ -45,15 +45,6 @@ class ProductService {
         return products.filter((product) => product.categoryId === categoryId); // Filter by categoryId
       }
       return products;
-    } catch (error) {
-      throw error;
-    }
-  }
-
-  async getProductById(id) {
-    try {
-      const product = await this.productRepository.findById(id);
-      return product;
     } catch (error) {
       throw error;
     }
