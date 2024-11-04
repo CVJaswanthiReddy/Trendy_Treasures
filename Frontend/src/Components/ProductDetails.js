@@ -3,13 +3,14 @@ import { useParams } from "react-router-dom";
 import axios from "axios";
 
 const ProductDetails = () => {
-  const { productId } = useParams(); // Extract productId from URL
+  const { productId } = useParams();
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [quantity, setQuantity] = useState(1);
-  const [selectedColor, setSelectedColor] = useState(null);
-  const [selectedSize, setSelectedSize] = useState(null);
+  const [userRating, setUserRating] = useState(null);
+  const [averageRating, setAverageRating] = useState(5); // Default average rating
+  const [ratingCount, setRatingCount] = useState(1); // Initial count of ratings
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -18,7 +19,14 @@ const ProductDetails = () => {
           `http://localhost:3005/api/v1/products/${productId}`
         );
         setProduct(response.data.product || response.data.data);
-        console.log(response.data.product); // Log the product to check the structure
+        const savedRating = localStorage.getItem(`rating-${productId}`);
+        const savedCount = localStorage.getItem(`ratingCount-${productId}`);
+        if (savedRating) {
+          setUserRating(Number(savedRating));
+        }
+        if (savedCount) {
+          setRatingCount(Number(savedCount));
+        }
       } catch (err) {
         console.error("Error fetching product:", err);
         setError("Failed to load product details. Please try again later.");
@@ -36,13 +44,49 @@ const ProductDetails = () => {
   }, [productId]);
 
   const handleAddToCart = () => {
-    // Logic to add product to cart
     console.log(`Added ${quantity} of ${product.name} to cart.`);
   };
 
   const handleAddToWishlist = () => {
-    // Logic to add product to wishlist
     console.log(`Added ${product.name} to wishlist.`);
+  };
+
+  const handleRating = (rating) => {
+    if (userRating === null) {
+      // If no rating has been given, set the new rating
+      setUserRating(rating);
+      const newAverage =
+        (averageRating * ratingCount + rating) / (ratingCount + 1);
+      setAverageRating(newAverage);
+      setRatingCount(ratingCount + 1);
+      localStorage.setItem(`rating-${productId}`, rating);
+      localStorage.setItem(`ratingCount-${productId}`, ratingCount + 1);
+    } else if (userRating === rating) {
+      // If the user clicks on the currently selected rating, remove the rating
+      const newCount = ratingCount - 1;
+
+      if (newCount > 0) {
+        // If there are still ratings left, recalculate the average
+        const newTotal = averageRating * ratingCount - userRating;
+        const newAverage = newTotal / newCount;
+        setAverageRating(newAverage);
+      } else {
+        // If no ratings are left, reset the average rating to default
+        setAverageRating(5); // Reset to default rating
+      }
+
+      setUserRating(null);
+      setRatingCount(newCount);
+      localStorage.removeItem(`rating-${productId}`);
+      localStorage.setItem(`ratingCount-${productId}`, newCount);
+    } else {
+      // If the user selects a different rating
+      const newAverage =
+        (averageRating * ratingCount + rating) / (ratingCount + 1);
+      setUserRating(rating);
+      setAverageRating(newAverage);
+      localStorage.setItem(`rating-${productId}`, rating);
+    }
   };
 
   if (loading) return <p>Loading product details...</p>;
@@ -55,51 +99,37 @@ const ProductDetails = () => {
       <p className="text-lg">Price: ${product.price}</p>
       <h2 className="text-lg">Description:</h2>
       <p>{product.description}</p>
-      <p>Rating: {product.rating || "No rating available"}</p>
 
-      <div className="mt-4">
-        <h3 className="text-lg">Select Color:</h3>
-        <div className="flex flex-wrap space-x-2 space-y-2">
-          {product.colors &&
-          Array.isArray(product.colors) &&
-          product.colors.length > 0 ? (
-            product.colors.map((color) => (
-              <button
-                key={color}
-                onClick={() => setSelectedColor(color)}
-                className={`border rounded-full w-10 h-10 ${
-                  selectedColor === color ? "ring-2 ring-blue-500" : ""
-                }`}
-                style={{ backgroundColor: color }}
-              ></button>
-            ))
-          ) : (
-            <p>No colors available</p>
-          )}
+      <div className="flex items-center mt-4">
+        <div className="flex items-center bg-green-500 rounded-full py-1 px-3">
+          <span className="text-white text-xl">{averageRating.toFixed(1)}</span>
+          <span className="text-white text-xl ml-1">★</span>
         </div>
+        <p className="text-black ml-2">
+          ({ratingCount} rating{ratingCount > 1 ? "s" : ""})
+        </p>
       </div>
 
       <div className="mt-4">
-        <h3 className="text-lg">Select Size:</h3>
-        <div className="flex flex-wrap space-x-2 space-y-2">
-          {product.sizes &&
-          Array.isArray(product.sizes) &&
-          product.sizes.length > 0 ? (
-            product.sizes.map((size) => (
-              <button
-                key={size}
-                onClick={() => setSelectedSize(size)}
-                className={`border rounded p-2 ${
-                  selectedSize === size ? "bg-blue-500 text-white" : "bg-white"
-                }`}
-              >
-                {size}
-              </button>
-            ))
-          ) : (
-            <p>No sizes available</p>
-          )}
+        <h3 className="text-lg">How would you rate this product?</h3>
+        <div className="flex space-x-2">
+          {[1, 2, 3, 4, 5].map((star) => (
+            <span
+              key={star}
+              onClick={() => handleRating(star)}
+              className={`cursor-pointer text-3xl transition-colors duration-300 ${
+                userRating >= star ? "text-green-500" : "text-black"
+              }`}
+            >
+              {userRating >= star ? "★" : "☆"}
+            </span>
+          ))}
         </div>
+        {userRating !== null && (
+          <p className="mt-2">
+            Your Rating: {userRating} star{userRating > 1 ? "s" : ""}
+          </p>
+        )}
       </div>
 
       <div className="mt-4">

@@ -71,6 +71,42 @@ class ProductService {
       throw error;
     }
   }
+  async addRating(productId, ratingData) {
+    try {
+      const product = await this.productRepository.addRating(
+        productId,
+        ratingData
+      );
+      return product; // Save the updated product here
+    } catch (error) {
+      throw new Error("Error adding rating: " + error.message);
+    }
+  }
+
+  async updateReview(productId, reviewId, updateData) {
+    try {
+      const product = await this.productRepository.updateReview(
+        productId,
+        reviewId,
+        updateData
+      );
+      return product; // Save the updated product here
+    } catch (error) {
+      throw new Error("Error updating review: " + error.message);
+    }
+  }
+
+  async deleteReview(productId, reviewId) {
+    try {
+      const product = await this.productRepository.deleteReview(
+        productId,
+        reviewId
+      );
+      return product; // Save the updated product here
+    } catch (error) {
+      throw new Error("Error deleting review: " + error.message);
+    }
+  }
 }
 
 export default ProductService;

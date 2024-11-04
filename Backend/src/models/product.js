@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 const ratingSchema = new mongoose.Schema({
   userId: {
-    type: mongoose.Schema.Types.ObjectId, // Assuming you have a User model
+    type: mongoose.Schema.Types.ObjectId,
     ref: "User",
     required: true,
   },
@@ -13,7 +13,7 @@ const ratingSchema = new mongoose.Schema({
     required: true,
   },
   comment: {
-    type: String, // Optional comment from the user
+    type: String,
     required: false,
   },
   ratedAt: {
@@ -34,14 +34,14 @@ const productSchema = new mongoose.Schema({
   },
   description: {
     type: String,
-    requied: true,
+    required: true,
   },
   categoryId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Category",
     required: true,
   },
-  ratings: [ratingSchema], // Array of individual ratings
+  reviews: [ratingSchema], // Array of individual ratings
   rating: {
     type: Number, // Average rating out of 5
     min: 0,

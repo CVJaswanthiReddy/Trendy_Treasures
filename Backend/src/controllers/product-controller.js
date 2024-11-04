@@ -168,3 +168,84 @@ export const getAllProducts = async (req, res) => {
     });
   }
 };
+
+// Add Rating and Review
+export const addRatingAndReview = async (req, res) => {
+  try {
+    const { productId } = req.params; // Get product ID from route params
+    const { userId, rating, comment } = req.body; // Get data from request body
+    const updatedProduct = await productService.addRating(productId, {
+      userId,
+      rating,
+      comment,
+    });
+
+    return res.status(201).json({
+      success: true,
+      message: "Rating and review added successfully.",
+      data: updatedProduct,
+    });
+  } catch (error) {
+    console.error("Error adding rating:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Error adding rating.",
+      error: error.message,
+    });
+  }
+};
+
+// Update Rating and Review
+export const updateRatingAndReview = async (req, res) => {
+  try {
+    const { productId, reviewId } = req.params; // Get product ID and review ID from route params
+    const { rating, comment } = req.body; // Get data from request body
+    console.log("controller");
+    const updatedProduct = await productService.updateReview(
+      productId,
+      reviewId,
+      {
+        rating,
+        comment,
+      }
+    );
+
+    return res.status(200).json({
+      success: true,
+      message: "Review updated successfully.",
+      data: updatedProduct,
+    });
+  } catch (error) {
+    console.error("Error updating review:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Error updating review.",
+      error: error.message,
+    });
+  }
+};
+
+// Delete Rating and Review
+export const deleteRatingAndReview = async (req, res) => {
+  try {
+    const { productId, reviewId } = req.params; // Get product ID and review ID from route params
+
+    const updatedProduct = await productService.deleteReview(
+      productId,
+      reviewId
+    );
+
+    return res.status(200).json({
+      success: true,
+      message: "Review deleted successfully.",
+      data: updatedProduct,
+    });
+  } catch (error) {
+    console.error("Error deleting review:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Error deleting review.",
+      error: error.message,
+    });
+  }
+};
