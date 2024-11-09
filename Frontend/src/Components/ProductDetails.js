@@ -9,8 +9,9 @@ const ProductDetails = () => {
   const [error, setError] = useState(null);
   const [quantity, setQuantity] = useState(1);
   const [userRating, setUserRating] = useState(null);
-  const [averageRating, setAverageRating] = useState(5); // Default average rating
-  const [ratingCount, setRatingCount] = useState(1); // Initial count of ratings
+  const [averageRating, setAverageRating] = useState(0);
+  const [ratingCount, setRatingCount] = useState(0);
+  const [reviewId, setReviewId] = useState(null); // To track the existing review ID
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -18,15 +19,27 @@ const ProductDetails = () => {
         const response = await axios.get(
           `http://localhost:3005/api/v1/products/${productId}`
         );
-        setProduct(response.data.product || response.data.data);
-        const savedRating = localStorage.getItem(`rating-${productId}`);
-        const savedCount = localStorage.getItem(`ratingCount-${productId}`);
-        if (savedRating) {
-          setUserRating(Number(savedRating));
+
+        const productData = response.data.product || response.data.data;
+
+        // Calculate average rating and total count if reviews exist
+        if (productData.reviews && productData.reviews.length > 0) {
+          const totalRating = productData.reviews.reduce(
+            (sum, review) => sum + review.rating,
+            0
+          );
+          const average = totalRating / productData.reviews.length;
+
+          setAverageRating(average);
+          setRatingCount(productData.reviews.length); // Set total rating count
+        } else {
+          setAverageRating(0); // No reviews, set average to 0
+          setRatingCount(0); // No ratings
         }
-        if (savedCount) {
-          setRatingCount(Number(savedCount));
-        }
+
+        setProduct(productData);
+        setUserRating(productData.userRating || null);
+        setReviewId(productData.reviewId || null);
       } catch (err) {
         console.error("Error fetching product:", err);
         setError("Failed to load product details. Please try again later.");
@@ -51,41 +64,73 @@ const ProductDetails = () => {
     console.log(`Added ${product.name} to wishlist.`);
   };
 
-  const handleRating = (rating) => {
-    if (userRating === null) {
-      // If no rating has been given, set the new rating
-      setUserRating(rating);
-      const newAverage =
-        (averageRating * ratingCount + rating) / (ratingCount + 1);
-      setAverageRating(newAverage);
-      setRatingCount(ratingCount + 1);
-      localStorage.setItem(`rating-${productId}`, rating);
-      localStorage.setItem(`ratingCount-${productId}`, ratingCount + 1);
-    } else if (userRating === rating) {
-      // If the user clicks on the currently selected rating, remove the rating
-      const newCount = ratingCount - 1;
+  const handleRating = async (rating) => {
+    try {
+      console.log("User rating:", rating);
 
-      if (newCount > 0) {
-        // If there are still ratings left, recalculate the average
-        const newTotal = averageRating * ratingCount - userRating;
-        const newAverage = newTotal / newCount;
-        setAverageRating(newAverage);
+      let response;
+
+      if (reviewId) {
+        // Update existing review
+        console.log(`Updating review with ID: ${reviewId}`);
+        response = await axios.put(
+          `http://localhost:3005/api/v1/products/${productId}/review/${reviewId}`,
+          { rating, comment: "Your updated comment here" }
+        );
       } else {
-        // If no ratings are left, reset the average rating to default
-        setAverageRating(5); // Reset to default rating
+        // Add new review
+        console.log("Creating new review...");
+        response = await axios.post(
+          `http://localhost:3005/api/v1/products/${productId}/review`,
+          { rating, comment: "Your comment here" }
+        );
+        console.log("New review created:", response.data); // Log the response to check structure
       }
 
-      setUserRating(null);
-      setRatingCount(newCount);
-      localStorage.removeItem(`rating-${productId}`);
-      localStorage.setItem(`ratingCount-${productId}`, newCount);
-    } else {
-      // If the user selects a different rating
-      const newAverage =
-        (averageRating * ratingCount + rating) / (ratingCount + 1);
-      setUserRating(rating);
-      setAverageRating(newAverage);
-      localStorage.setItem(`rating-${productId}`, rating);
+      // Fetch the updated product details
+      console.log(
+        "Fetching updated product details after review submission..."
+      );
+      const updatedResponse = await axios.get(
+        `http://localhost:3005/api/v1/products/${productId}`
+      );
+
+      const updatedProduct =
+        updatedResponse.data.product || updatedResponse.data.data;
+      console.log("Updated product data:", updatedProduct);
+
+      // Recalculate average rating and update count from updated reviews
+      if (updatedProduct.reviews && updatedProduct.reviews.length > 0) {
+        const totalRating = updatedProduct.reviews.reduce(
+          (sum, review) => sum + review.rating,
+          0
+        );
+        const average = totalRating / updatedProduct.reviews.length;
+
+        setAverageRating(average); // Update average rating
+        setRatingCount(updatedProduct.reviews.length); // Update rating count
+        console.log("Updated average rating:", average);
+        console.log("Updated rating count:", updatedProduct.reviews.length);
+      } else {
+        setAverageRating(0); // No reviews
+        setRatingCount(0); // No ratings
+        console.log("No reviews after update.");
+      }
+
+      setUserRating(rating); // Set user's rating
+
+      // Update the review ID if a new review was created
+      if (!reviewId) {
+        const newReviewId = response.data._id; // Assuming the response contains the review ID in `_id`
+        setReviewId(newReviewId); // Set the new review ID
+        console.log("New review ID set:", newReviewId);
+      }
+    } catch (error) {
+      console.error(
+        "Error submitting rating:",
+        error.response ? error.response.data : error
+      );
+      setError("Failed to submit rating. Please try again.");
     }
   };
 
@@ -106,7 +151,7 @@ const ProductDetails = () => {
           <span className="text-white text-xl ml-1">★</span>
         </div>
         <p className="text-black ml-2">
-          ({ratingCount} rating{ratingCount > 1 ? "s" : ""})
+          ({ratingCount} rating{ratingCount !== 1 ? "s" : ""})
         </p>
       </div>
 
@@ -138,7 +183,7 @@ const ProductDetails = () => {
           type="number"
           min="1"
           value={quantity}
-          onChange={(e) => setQuantity(e.target.value)}
+          onChange={(e) => setQuantity(Math.max(1, e.target.value))}
           className="border rounded p-2 w-20"
         />
       </div>

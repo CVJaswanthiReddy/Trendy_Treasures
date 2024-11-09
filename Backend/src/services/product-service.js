@@ -71,12 +71,16 @@ class ProductService {
       throw error;
     }
   }
-  async addRating(productId, ratingData) {
+  async addRating(productId, { userId, rating, comment }) {
     try {
-      const product = await this.productRepository.addRating(
-        productId,
-        ratingData
-      );
+      if (!userId) {
+        throw new Error("User ID is required.");
+      }
+      const product = await this.productRepository.addRating(productId, {
+        userId,
+        rating,
+        comment,
+      });
       return product; // Save the updated product here
     } catch (error) {
       throw new Error("Error adding rating: " + error.message);

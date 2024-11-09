@@ -174,12 +174,14 @@ export const addRatingAndReview = async (req, res) => {
   try {
     const { productId } = req.params; // Get product ID from route params
     const { userId, rating, comment } = req.body; // Get data from request body
+
     const updatedProduct = await productService.addRating(productId, {
       userId,
       rating,
       comment,
     });
 
+    console.log(`conttoller data is as follows ${updatedProduct}`);
     return res.status(201).json({
       success: true,
       message: "Rating and review added successfully.",
