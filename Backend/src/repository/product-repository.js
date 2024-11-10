@@ -94,56 +94,56 @@ class ProductRepository extends CrudRepository {
       throw new Error("Error adding rating: " + error.message);
     }
   }
-  async addRating(productId, { userId, rating, comment }) {
-    try {
-      const product = await this.get(productId);
-      if (!product) throw new Error("Product not found.");
+  // async addRating(productId, { userId, rating, comment }) {
+  //   try {
+  //     const product = await this.get(productId);
+  //     if (!product) throw new Error("Product not found.");
 
-      // Convert `userId` to ObjectId if it’s a valid format
-      if (
-        typeof userId === "string" &&
-        userId.length === 24 &&
-        /^[0-9a-fA-F]{24}$/.test(userId)
-      ) {
-        userId = new mongoose.Types.ObjectId(userId);
-      } else {
-        throw new Error(
-          "Invalid userId format. It must be a 24-character hex string."
-        );
-      }
+  //     // Convert `userId` to ObjectId if it’s a valid format
+  //     if (
+  //       typeof userId === "string" &&
+  //       userId.length === 24 &&
+  //       /^[0-9a-fA-F]{24}$/.test(userId)
+  //     ) {
+  //       userId = new mongoose.Types.ObjectId(userId);
+  //     } else {
+  //       throw new Error(
+  //         "Invalid userId format. It must be a 24-character hex string."
+  //       );
+  //     }
 
-      // Create the review object and directly set the ObjectId
-      const review = {
-        userId: userId, // Make sure to set userId correctly
-        rating,
-        comment,
-        ratedAt: new Date(),
-      };
+  //     // Create the review object and directly set the ObjectId
+  //     const review = {
+  //       userId: userId, // Make sure to set userId correctly
+  //       rating,
+  //       comment,
+  //       ratedAt: new Date(),
+  //     };
 
-      console.log("Prepared review with userId:", review.userId); // Debugging output
+  //     console.log("Prepared review with userId:", review.userId); // Debugging output
 
-      // Push the new review and recalculate the average rating
-      // Add the new review to reviews array
-      product.reviews.push({
-        userId,
-        rating,
-        comment,
-        ratedAt: new Date(),
-      });
+  //     // Push the new review and recalculate the average rating
+  //     // Add the new review to reviews array
+  //     product.reviews.push({
+  //       userId,
+  //       rating,
+  //       comment,
+  //       ratedAt: new Date(),
+  //     });
 
-      // Update totalRatings and calculate the average rating
-      product.totalRatings = product.reviews.length;
-      product.rating =
-        product.reviews.reduce((acc, review) => acc + review.rating, 0) /
-        product.totalRatings;
+  //     // Update totalRatings and calculate the average rating
+  //     product.totalRatings = product.reviews.length;
+  //     product.rating =
+  //       product.reviews.reduce((acc, review) => acc + review.rating, 0) /
+  //       product.totalRatings;
 
-      // Save the updated product
-      await product.save();
-    } catch (error) {
-      console.error("Error in addRating:", error.message);
-      throw new Error("Error adding rating: " + error.message);
-    }
-  }
+  //     // Save the updated product
+  //     await product.save();
+  //   } catch (error) {
+  //     console.error("Error in addRating:", error.message);
+  //     throw new Error("Error adding rating: " + error.message);
+  //   }
+  // }
 
   // Update existing review
   async updateReview(productId, reviewId, updateData) {

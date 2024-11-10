@@ -8,10 +8,12 @@ const ProductDetails = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [quantity, setQuantity] = useState(1);
-  const [userRating, setUserRating] = useState(null);
+  const [userRating, setUserRating] = useState(0);
   const [averageRating, setAverageRating] = useState(0);
   const [ratingCount, setRatingCount] = useState(0);
-  const [reviewId, setReviewId] = useState(null); // To track the existing review ID
+  const [reviewText, setReviewText] = useState("");
+  const [reviewId, setReviewId] = useState(null);
+  const [userId, setUserId] = useState(""); // State for storing the user ID
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -22,7 +24,6 @@ const ProductDetails = () => {
 
         const productData = response.data.product || response.data.data;
 
-        // Calculate average rating and total count if reviews exist
         if (productData.reviews && productData.reviews.length > 0) {
           const totalRating = productData.reviews.reduce(
             (sum, review) => sum + review.rating,
@@ -31,14 +32,14 @@ const ProductDetails = () => {
           const average = totalRating / productData.reviews.length;
 
           setAverageRating(average);
-          setRatingCount(productData.reviews.length); // Set total rating count
+          setRatingCount(productData.reviews.length);
         } else {
-          setAverageRating(0); // No reviews, set average to 0
-          setRatingCount(0); // No ratings
+          setAverageRating(0);
+          setRatingCount(0);
         }
 
         setProduct(productData);
-        setUserRating(productData.userRating || null);
+        setUserRating(productData.userRating || 0);
         setReviewId(productData.reviewId || null);
       } catch (err) {
         console.error("Error fetching product:", err);
@@ -65,41 +66,33 @@ const ProductDetails = () => {
   };
 
   const handleRating = async (rating) => {
-    try {
-      console.log("User rating:", rating);
+    if (!userId) {
+      setError("User ID is required to submit a review.");
+      return;
+    }
 
+    try {
       let response;
 
       if (reviewId) {
-        // Update existing review
-        console.log(`Updating review with ID: ${reviewId}`);
         response = await axios.put(
           `http://localhost:3005/api/v1/products/${productId}/review/${reviewId}`,
-          { rating, comment: "Your updated comment here" }
+          { rating, comment: reviewText, userId }
         );
       } else {
-        // Add new review
-        console.log("Creating new review...");
         response = await axios.post(
           `http://localhost:3005/api/v1/products/${productId}/review`,
-          { rating, comment: "Your comment here" }
+          { rating, comment: reviewText, userId }
         );
-        console.log("New review created:", response.data); // Log the response to check structure
       }
 
-      // Fetch the updated product details
-      console.log(
-        "Fetching updated product details after review submission..."
-      );
       const updatedResponse = await axios.get(
         `http://localhost:3005/api/v1/products/${productId}`
       );
 
       const updatedProduct =
         updatedResponse.data.product || updatedResponse.data.data;
-      console.log("Updated product data:", updatedProduct);
 
-      // Recalculate average rating and update count from updated reviews
       if (updatedProduct.reviews && updatedProduct.reviews.length > 0) {
         const totalRating = updatedProduct.reviews.reduce(
           (sum, review) => sum + review.rating,
@@ -107,23 +100,18 @@ const ProductDetails = () => {
         );
         const average = totalRating / updatedProduct.reviews.length;
 
-        setAverageRating(average); // Update average rating
-        setRatingCount(updatedProduct.reviews.length); // Update rating count
-        console.log("Updated average rating:", average);
-        console.log("Updated rating count:", updatedProduct.reviews.length);
+        setAverageRating(average);
+        setRatingCount(updatedProduct.reviews.length);
       } else {
-        setAverageRating(0); // No reviews
-        setRatingCount(0); // No ratings
-        console.log("No reviews after update.");
+        setAverageRating(0);
+        setRatingCount(0);
       }
 
-      setUserRating(rating); // Set user's rating
-
-      // Update the review ID if a new review was created
+      setUserRating(rating);
+      setReviewText("");
       if (!reviewId) {
-        const newReviewId = response.data._id; // Assuming the response contains the review ID in `_id`
-        setReviewId(newReviewId); // Set the new review ID
-        console.log("New review ID set:", newReviewId);
+        const newReviewId = response.data._id;
+        setReviewId(newReviewId);
       }
     } catch (error) {
       console.error(
@@ -140,40 +128,96 @@ const ProductDetails = () => {
 
   return (
     <div className="container mx-auto py-8 px-4 sm:px-6 lg:px-8">
-      <h1 className="text-3xl font-bold">{product.name}</h1>
-      <p className="text-lg">Price: ${product.price}</p>
-      <h2 className="text-lg">Description:</h2>
-      <p>{product.description}</p>
-
-      <div className="flex items-center mt-4">
-        <div className="flex items-center bg-green-500 rounded-full py-1 px-3">
-          <span className="text-white text-xl">{averageRating.toFixed(1)}</span>
-          <span className="text-white text-xl ml-1">★</span>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <h1 className="text-3xl font-bold">{product.name}</h1>
+          <p className="text-lg text-gray-700">Price: ${product.price}</p>
+          <h2 className="text-lg mt-2">Description:</h2>
+          <p className="text-gray-600">{product.description}</p>
         </div>
-        <p className="text-black ml-2">
-          ({ratingCount} rating{ratingCount !== 1 ? "s" : ""})
-        </p>
+
+        <div className="bg-white p-4 rounded-lg shadow-md">
+          <div className="flex items-center">
+            <div className="flex items-center bg-green-500 rounded-full py-1 px-3">
+              <span className="text-white text-xl">
+                {averageRating.toFixed(1)}
+              </span>
+              <span className="text-white text-xl ml-1">★</span>
+            </div>
+            <p className="text-black ml-2">
+              ({ratingCount} rating{ratingCount !== 1 ? "s" : ""})
+            </p>
+          </div>
+
+          <div className="mt-4">
+            <h3 className="text-lg">How would you rate this product?</h3>
+            <div className="flex space-x-2">
+              {[1, 2, 3, 4, 5].map((star) => (
+                <span
+                  key={star}
+                  onClick={() => handleRating(star)}
+                  className={`cursor-pointer text-3xl transition-colors duration-300 ${
+                    userRating >= star ? "text-green-500" : "text-black"
+                  }`}
+                >
+                  {userRating >= star ? "★" : "☆"}
+                </span>
+              ))}
+            </div>
+            {userRating !== null && (
+              <p className="mt-2">
+                Your Rating: {userRating} star{userRating > 1 ? "s" : ""}
+              </p>
+            )}
+          </div>
+
+          <div className="mt-4">
+            <h3 className="text-lg">Write a Review:</h3>
+            <textarea
+              value={reviewText}
+              onChange={(e) => setReviewText(e.target.value)}
+              rows="4"
+              className="border rounded p-2 w-full"
+              placeholder="Write your review here..."
+            />
+          </div>
+
+          <div className="mt-4">
+            <h3 className="text-lg">Your User ID:</h3>
+            <input
+              type="text"
+              value={userId}
+              onChange={(e) => setUserId(e.target.value)}
+              className="border rounded p-2 w-full"
+              placeholder="Enter your user ID"
+            />
+          </div>
+
+          <div className="mt-4">
+            <button
+              onClick={() => handleRating(userRating)}
+              className="bg-green-500 text-white py-2 px-4 rounded w-full md:w-auto"
+            >
+              Submit Review
+            </button>
+          </div>
+        </div>
       </div>
 
-      <div className="mt-4">
-        <h3 className="text-lg">How would you rate this product?</h3>
-        <div className="flex space-x-2">
-          {[1, 2, 3, 4, 5].map((star) => (
-            <span
-              key={star}
-              onClick={() => handleRating(star)}
-              className={`cursor-pointer text-3xl transition-colors duration-300 ${
-                userRating >= star ? "text-green-500" : "text-black"
-              }`}
-            >
-              {userRating >= star ? "★" : "☆"}
-            </span>
-          ))}
-        </div>
-        {userRating !== null && (
-          <p className="mt-2">
-            Your Rating: {userRating} star{userRating > 1 ? "s" : ""}
-          </p>
+      <div className="mt-8">
+        <h3 className="text-lg font-semibold">Existing Reviews:</h3>
+        {product.reviews && product.reviews.length > 0 ? (
+          product.reviews.map((review) => (
+            <div key={review._id} className="mt-4 border-t pt-4">
+              <div className="flex items-center">
+                <span className="font-bold">{review.user}</span>
+                <span className="ml-2">{review.rating} ★</span>
+              </div>
+              <p>{review.comment}</p>
+            </div>
+          ))
+        ) : (
+          <p>No reviews yet. Be the first to review this product!</p>
         )}
       </div>
 
@@ -183,21 +227,23 @@ const ProductDetails = () => {
           type="number"
           min="1"
           value={quantity}
-          onChange={(e) => setQuantity(Math.max(1, e.target.value))}
-          className="border rounded p-2 w-20"
+          onChange={(e) =>
+            setQuantity(Math.max(1, parseInt(e.target.value, 10)))
+          }
+          className="border rounded p-2 w-full sm:w-32"
         />
       </div>
 
-      <div className="mt-4 flex flex-col md:flex-row space-x-0 md:space-x-2">
+      <div className="flex space-x-4 mt-4">
         <button
           onClick={handleAddToCart}
-          className="bg-green-500 text-white py-2 px-4 rounded"
+          className="bg-blue-500 text-white py-2 px-4 rounded w-full sm:w-auto"
         >
           Add to Cart
         </button>
         <button
           onClick={handleAddToWishlist}
-          className="bg-yellow-500 text-white py-2 px-4 rounded mt-2 md:mt-0"
+          className="bg-gray-500 text-white py-2 px-4 rounded w-full sm:w-auto"
         >
           Add to Wishlist
         </button>
